@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #4B0082; /* Purple background */
+            color: #FFD700; /* Gold text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #4B0082; /* Purple text */
+        }
+        .container input,
+        .container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #4B0082; /* Purple border */
+            border-radius: 5px;
+        }
+        .container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FFD700; /* Gold background */
+            border: none;
+            border-radius: 5px;
+            color: #4B0082; /* Purple text */
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .container button:disabled {
+            background-color: #CCCCCC; /* Disabled button color */
+            cursor: not-allowed;
+        }
+        .container .earnings {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #FFD700; /* Gold text */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Survey</h1>
+        <form id="surveyForm">
+            <label for="question1">Question 1:</label>
+            <textarea id="question1" placeholder="Your answer..." required></textarea>
+
+            <label for="question2">Question 2:</label>
+            <textarea id="question2" placeholder="Your answer..." required></textarea>
+
+            <button type="submit" id="submitButton" disabled>Submit</button>
+        </form>
+        <div class="earnings" id="earningsMessage" style="display: none;">
+            Thank you for completing the survey! You have earned 20 Kenyan Shillings.
+        </div>
+    </div>
+    <script>
+        const surveyForm = document.getElementById('surveyForm');
+        const question1 = document.getElementById('question1');
+        const question2 = document.getElementById('question2');
+        const submitButton = document.getElementById('submitButton');
+        const earningsMessage = document.getElementById('earningsMessage');
+
+        function checkInputs() {
+            submitButton.disabled = !question1.value || !question2.value;
+        }
+
+        question1.addEventListener('input', checkInputs);
+        question2.addEventListener('input', checkInputs);
+
+        surveyForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            earningsMessage.style.display = 'block';
+            surveyForm.reset();
+            submitButton.disabled = true;
+        });
+    </script>
+</body>
+</html>

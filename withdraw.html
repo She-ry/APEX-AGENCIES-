@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #4B0082; /* Purple background */
+            color: #FFD700; /* Gold text */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        .container {
+            background-color: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #4B0082; /* Purple text */
+            font-size: 2em;
+        }
+        .container input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #4B0082; /* Purple border */
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .container button {
+            padding: 10px 20px;
+            background-color: #FFD700; /* Gold background */
+            color: #4B0082; /* Purple text */
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container button:hover {
+            background-color: #4B0082; /* Purple background */
+            color: #FFD700; /* Gold text */
+        }
+        .balance {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #4B0082; /* Purple text */
+        }
+        .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .links a {
+            display: block;
+            color: #4B0082; /* Purple text */
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 1.1em;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+        .links a:hover {
+            color: #FFD700; /* Gold text */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Withdrawal Page</h1>
+        
+        <!-- Withdrawal Form -->
+        <input type="number" id="amount" placeholder="Enter amount to withdraw" oninput="checkAmount()">
+        <button id="withdrawBtn" disabled onclick="processWithdrawal()">Withdraw</button>
+        
+        <!-- Balance Display -->
+        <div class="balance">
+            <p><strong>Your Balance:</strong> <span id="balance">0</span> KES</p>
+        </div>
+        
+        <!-- Links -->
+        <div class="links">
+            <a href="index.html">Back to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize balance and last withdrawal date if not already set
+        if (localStorage.getItem('balance') === null) {
+            localStorage.setItem('balance', '0');
+        }
+        if (localStorage.getItem('lastWithdrawal') === null) {
+            localStorage.setItem('lastWithdrawal', '1970-01-01');
+        }
+
+        // Update balance display
+        function updateBalance() {
+            const balance = localStorage.getItem('balance');
+            document.getElementById('balance').textContent = balance;
+        }
+        
+        // Check if the amount is valid and enable/disable the withdraw button
+        function checkAmount() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const button = document.getElementById('withdrawBtn');
+            if (amount >= 500) {
+                button.disabled = false;
+            } else {
+                button.disabled = true;
+            }
+        }
+
+        // Process withdrawal
+        function processWithdrawal() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const balance = parseFloat(localStorage.getItem('balance'));
+            const lastWithdrawal = new Date(localStorage.getItem('lastWithdrawal'));
+            const now = new Date();
+
+            // Check if 14 days have passed since last withdrawal
+            const diffDays = Math.ceil((now - lastWithdrawal) / (1000 * 60 * 60 * 24));
+            if (diffDays < 14) {
+                alert('You can only withdraw once every 14 days.');
+                return;
+            }
+
+            // Check if there is enough balance
+            if (amount > balance) {
+                alert('Insufficient balance.');
+                return;
+            }
+
+            // Update balance and last withdrawal date
+            localStorage.setItem('balance', (balance - amount).toString());
+            localStorage.setItem('lastWithdrawal', now.toISOString());
+            updateBalance();
+
+            alert('Withdrawal successful.');
+            document.getElementById('amount').value = ''; // Clear the input field
+            checkAmount(); // Update button state
+        }
+
+        // Update balance on page load
+        updateBalance();
+    </script>
+</body>
+</html>

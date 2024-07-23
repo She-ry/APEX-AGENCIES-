@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #4B0082; /* Purple background */
+            color: #FFD700; /* Gold text */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        .container {
+            background-color: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #4B0082; /* Purple text */
+            font-size: 2em;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #4B0082; /* Purple border */
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+        .question h2 {
+            margin: 0 0 10px 0;
+            color: #4B0082; /* Purple text */
+        }
+        .question input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #4B0082; /* Purple border */
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .question button {
+            padding: 10px 20px;
+            background-color: #FFD700; /* Gold background */
+            color: #4B0082; /* Purple text */
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .question button:hover {
+            background-color: #4B0082; /* Purple background */
+            color: #FFD700; /* Gold text */
+        }
+        .balance {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #4B0082; /* Purple text */
+        }
+        .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .links a {
+            display: block;
+            color: #4B0082; /* Purple text */
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 1.1em;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+        .links a:hover {
+            color: #FFD700; /* Gold text */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Blog Page</h1>
+        
+        <!-- Questions -->
+        <div class="question">
+            <h2>Question 1: What is your favorite color?</h2>
+            <input type="text" id="answer1" placeholder="Your answer here" oninput="checkInput('answer1', 'submit1')">
+            <button id="submit1" disabled onclick="answerQuestion(50, 'answer1')">Submit Answer</button>
+        </div>
+        <div class="question">
+            <h2>Question 2: What is your favorite food?</h2>
+            <input type="text" id="answer2" placeholder="Your answer here" oninput="checkInput('answer2', 'submit2')">
+            <button id="submit2" disabled onclick="answerQuestion(50, 'answer2')">Submit Answer</button>
+        </div>
+        
+        <!-- Balance Display -->
+        <div class="balance">
+            <p><strong>Your Balance:</strong> <span id="balance">0</span> KES</p>
+        </div>
+        
+        <!-- Links -->
+        <div class="links">
+            <a href="index.html">Back to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize balance if not already set
+        if (localStorage.getItem('balance') === null) {
+            localStorage.setItem('balance', '0');
+        }
+
+        // Update balance display
+        function updateBalance() {
+            const balance = localStorage.getItem('balance');
+            document.getElementById('balance').textContent = balance;
+        }
+        
+        // Handle question answer
+        function answerQuestion(amount, answerId) {
+            let balance = parseInt(localStorage.getItem('balance'), 10);
+            balance += amount;
+            localStorage.setItem('balance', balance.toString());
+            updateBalance();
+            document.getElementById(answerId).value = ''; // Clear the answer field
+            alert(`You've earned ${amount} KES!`);
+        }
+        
+        // Check if the input field is filled and enable/disable the submit button
+        function checkInput(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            const button = document.getElementById(buttonId);
+            button.disabled = input.value.trim() === '';
+        }
+
+        // Update balance on page load
+        updateBalance();
+    </script>
+</body>
+</html>

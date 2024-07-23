@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Videos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #4B0082; /* Purple background */
+            color: #FFD700; /* Gold text */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        .container {
+            background-color: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            text-align: center;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #4B0082; /* Purple text */
+            font-size: 2em;
+        }
+        .video-list {
+            list-style: none;
+            padding: 0;
+        }
+        .video-list li {
+            margin: 15px 0;
+            padding: 10px;
+            border: 2px solid #4B0082; /* Purple border */
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+        .video-list a {
+            color: #4B0082; /* Purple text */
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: color 0.3s;
+        }
+        .video-list a:hover {
+            color: #FFD700; /* Gold text */
+        }
+        .balance {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #4B0082; /* Purple text */
+        }
+        .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .links a {
+            display: block;
+            color: #4B0082; /* Purple text */
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 1.1em;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+        .links a:hover {
+            color: #FFD700; /* Gold text */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Videos</h1>
+        
+        <!-- YouTube Video Links -->
+        <ul class="video-list">
+            <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" onclick="earnReward()">Watch Rick Astley</a></li>
+            <li><a href="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" target="_blank" onclick="earnReward()">Watch Another Video</a></li>
+            <!-- Add more YouTube links here -->
+        </ul>
+        
+        <!-- Balance Display -->
+        <div class="balance">
+            <p><strong>Your Balance:</strong> <span id="balance">0</span> KES</p>
+        </div>
+        
+        <!-- Links -->
+        <div class="links">
+            <a href="index.html">Back to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize balance if not already set
+        if (localStorage.getItem('balance') === null) {
+            localStorage.setItem('balance', '0');
+        }
+
+        // Update balance display
+        function updateBalance() {
+            const balance = localStorage.getItem('balance');
+            document.getElementById('balance').textContent = balance;
+        }
+        
+        // Handle reward for clicking a YouTube link
+        function earnReward() {
+            let balance = parseInt(localStorage.getItem('balance'), 10);
+            balance += 20; // Earn 20 KES
+            localStorage.setItem('balance', balance.toString());
+            updateBalance();
+            alert('You\'ve earned 20 KES for watching this video!');
+        }
+        
+        // Update balance on page load
+        updateBalance();
+    </script>
+</body>
+</html>
