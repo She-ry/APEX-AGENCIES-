@@ -73,17 +73,20 @@
             color: #FFD700; /* Gold text */
             text-decoration: underline;
         }
+        .expired-message {
+            font-size: 1.5em;
+            color: red;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="videoContainer">
         <h1>YouTube Videos</h1>
         
         <!-- YouTube Video Links -->
-        <ul class="video-list">
-            <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" onclick="earnReward()">Watch Rick Astley</a></li>
-            <li><a href="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" target="_blank" onclick="earnReward()">Watch Another Video</a></li>
-            <!-- Add more YouTube links here -->
+        <ul class="video-list" id="videoList">
+            <li><a href="#" id="videoLink" target="_blank" onclick="earnReward()">Watch Video</a></li>
         </ul>
         
         <!-- Balance Display -->
@@ -95,9 +98,63 @@
         <div class="links">
             <a href="index.html">Back to Home</a>
         </div>
+
+        <!-- Expiration Message -->
+        <div id="expiredMessage" class="expired-message" style="display: none;">
+            The video watching period has expired. You had access for 3 days from your first visit.
+        </div>
     </div>
     
     <script>
+        // Get the current date
+        const today = new Date();
+
+        // Check if the first visit date is set
+        if (localStorage.getItem('firstVisitDate') === null) {
+            // Store the current date as the first visit date in localStorage
+            localStorage.setItem('firstVisitDate', today.toISOString());
+            localStorage.setItem('watchedDay', '0'); // Initialize watched day
+        }
+
+        // Get the stored first visit date and calculate the difference in days
+        const firstVisitDate = new Date(localStorage.getItem('firstVisitDate'));
+        const differenceInTime = today.getTime() - firstVisitDate.getTime();
+        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+        const watchedDay = parseInt(localStorage.getItem('watchedDay'));
+
+        // Check if the difference is greater than 3 days
+        if (differenceInDays > 3) {
+            // Hide the video content and show the expiration message
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('expiredMessage').style.display = 'block';
+        } else if (watchedDay < differenceInDays) {
+            // Update watched day
+            localStorage.setItem('watchedDay', differenceInDays); 
+            // Generate a random video for the current day
+            displayRandomVideo();
+        } else {
+            // If the video has already been watched today, hide the video link
+            document.getElementById('videoLink').textContent = "You have already watched today's video.";
+            document.getElementById('videoLink').style.pointerEvents = 'none'; // Disable link
+        }
+
+        // List of YouTube video links
+        const videos = [
+            { title: "Watch Rick Astley", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+            { title: "Sample Video 1", url: "https://www.youtube.com/watch?v=VIDEO_ID_1" },
+            { title: "Sample Video 2", url: "https://www.youtube.com/watch?v=VIDEO_ID_2" },
+            { title: "Sample Video 3", url: "https://www.youtube.com/watch?v=VIDEO_ID_3" },
+            // Add more video links as needed
+        ];
+
+        // Display a random video
+        function displayRandomVideo() {
+            const randomIndex = Math.floor(Math.random() * videos.length);
+            const selectedVideo = videos[randomIndex];
+            document.getElementById('videoLink').textContent = selectedVideo.title;
+            document.getElementById('videoLink').href = selectedVideo.url;
+        }
+
         // Initialize balance if not already set
         if (localStorage.getItem('balance') === null) {
             localStorage.setItem('balance', '0');
@@ -117,7 +174,7 @@
             updateBalance();
             alert('You\'ve earned 20 KES for watching this video!');
         }
-        
+
         // Update balance on page load
         updateBalance();
     </script>

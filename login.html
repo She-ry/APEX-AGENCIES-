@@ -74,6 +74,14 @@
             loginButton.disabled = !username.value || !password.value;
         }
 
+        // Event listener to handle login
+        loginButton.addEventListener('click', function() {
+            // Add logic to validate username and password here if needed
+            // For now, we assume the login is successful
+            // Redirect to the index page
+            window.location.href = "index.html";
+        });
+
         username.addEventListener('input', checkInputs);
         password.addEventListener('input', checkInputs);
     </script>

@@ -43,8 +43,9 @@
             margin: 0 0 10px 0;
             color: #4B0082; /* Purple text */
         }
-        .question input {
+        .question textarea {
             width: calc(100% - 22px);
+            height: 100px;
             padding: 10px;
             margin: 10px 0;
             border: 2px solid #4B0082; /* Purple border */
@@ -65,10 +66,10 @@
             background-color: #4B0082; /* Purple background */
             color: #FFD700; /* Gold text */
         }
-        .balance {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #4B0082; /* Purple text */
+        .word-count {
+            font-size: 0.9em;
+            color: #4B0082;
+            margin-top: 5px;
         }
         .links {
             margin-top: 20px;
@@ -86,66 +87,116 @@
             color: #FFD700; /* Gold text */
             text-decoration: underline;
         }
+        .expired-message {
+            font-size: 1.5em;
+            color: red;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="blogContainer">
         <h1>Blog Page</h1>
         
         <!-- Questions -->
         <div class="question">
-            <h2>Question 1: What is your favorite color?</h2>
-            <input type="text" id="answer1" placeholder="Your answer here" oninput="checkInput('answer1', 'submit1')">
-            <button id="submit1" disabled onclick="answerQuestion(50, 'answer1')">Submit Answer</button>
+            <h2 id="question1"></h2>
+            <textarea id="answer1" placeholder="Your answer here (at least 200 words)" oninput="checkWordCount('answer1', 'submit1', 'wordCount1')"></textarea>
+            <div class="word-count" id="wordCount1">Word Count: 0</div>
+            <button id="submit1" disabled onclick="submitAnswer(50, 'answer1', 'submit1')">Submit Answer</button>
         </div>
         <div class="question">
-            <h2>Question 2: What is your favorite food?</h2>
-            <input type="text" id="answer2" placeholder="Your answer here" oninput="checkInput('answer2', 'submit2')">
-            <button id="submit2" disabled onclick="answerQuestion(50, 'answer2')">Submit Answer</button>
-        </div>
-        
-        <!-- Balance Display -->
-        <div class="balance">
-            <p><strong>Your Balance:</strong> <span id="balance">0</span> KES</p>
+            <h2 id="question2"></h2>
+            <textarea id="answer2" placeholder="Your answer here (at least 200 words)" oninput="checkWordCount('answer2', 'submit2', 'wordCount2')"></textarea>
+            <div class="word-count" id="wordCount2">Word Count: 0</div>
+            <button id="submit2" disabled onclick="submitAnswer(50, 'answer2', 'submit2')">Submit Answer</button>
         </div>
         
         <!-- Links -->
         <div class="links">
             <a href="index.html">Back to Home</a>
         </div>
+
+        <!-- Expiration Message -->
+        <div id="expiredMessage" class="expired-message" style="display: none;">
+            The blog page is no longer available. It was accessible for 7 days from your first visit.
+        </div>
     </div>
     
     <script>
-        // Initialize balance if not already set
+        // Get the current date
+        const today = new Date();
+
+        // Check if the first visit date is set
+        if (localStorage.getItem('firstVisitDate') === null) {
+            // Store the current date as the first visit date in localStorage
+            localStorage.setItem('firstVisitDate', today.toISOString());
+        }
+
+        // Get the stored first visit date and calculate the difference in days
+        const firstVisitDate = new Date(localStorage.getItem('firstVisitDate'));
+        const differenceInTime = today.getTime() - firstVisitDate.getTime();
+        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+
+        // Check if the difference is greater than 7 days
+        if (differenceInDays > 7) {
+            // Hide the blog content and show the expiration message
+            document.getElementById('blogContainer').style.display = 'none';
+            document.getElementById('expiredMessage').style.display = 'block';
+        }
+
+        // List of random questions
+        const questions = [
+            "What motivates you to achieve your goals?",
+            "Describe a memorable travel experience you had.",
+            "What is your opinion on the impact of social media in today's society?",
+            "Explain a life lesson you've learned recently.",
+            "What are your thoughts on climate change and its effects?",
+            "Describe your favorite childhood memory.",
+            "What book has influenced you the most and why?",
+            "How do you handle stress and difficult situations?",
+            "What are your views on the importance of mental health awareness?"
+        ];
+
+        // Generate random questions
+        function generateRandomQuestion() {
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            return questions[randomIndex];
+        }
+
+        // Set random questions to the page
+        document.getElementById('question1').textContent = generateRandomQuestion();
+        document.getElementById('question2').textContent = generateRandomQuestion();
+
+        // Check word count and enable/disable the submit button
+        function checkWordCount(textareaId, buttonId, wordCountId) {
+            const textarea = document.getElementById(textareaId);
+            const wordCountElement = document.getElementById(wordCountId);
+            const wordCount = textarea.value.split(/\s+/).filter(word => word.length > 0).length;
+            wordCountElement.textContent = `Word Count: ${wordCount}`;
+            document.getElementById(buttonId).disabled = wordCount < 200;
+        }
+
+        // Handle answering the questions and updating balance
+        function submitAnswer(amount, textareaId, buttonId) {
+            let balance = parseInt(localStorage.getItem('balance'), 10) || 0;
+            balance += amount;
+
+            // Update the stored balance
+            localStorage.setItem('balance', balance.toString());
+
+            // Clear the input field and disable the submit button after submission
+            document.getElementById(textareaId).value = '';
+            document.getElementById(buttonId).disabled = true;
+            document.getElementById(buttonId).textContent = 'Submitted';
+
+            alert(`You've earned ${amount} KES!`);
+        }
+
+        // Initialize balance if not set
         if (localStorage.getItem('balance') === null) {
             localStorage.setItem('balance', '0');
         }
-
-        // Update balance display
-        function updateBalance() {
-            const balance = localStorage.getItem('balance');
-            document.getElementById('balance').textContent = balance;
-        }
-        
-        // Handle question answer
-        function answerQuestion(amount, answerId) {
-            let balance = parseInt(localStorage.getItem('balance'), 10);
-            balance += amount;
-            localStorage.setItem('balance', balance.toString());
-            updateBalance();
-            document.getElementById(answerId).value = ''; // Clear the answer field
-            alert(`You've earned ${amount} KES!`);
-        }
-        
-        // Check if the input field is filled and enable/disable the submit button
-        function checkInput(inputId, buttonId) {
-            const input = document.getElementById(inputId);
-            const button = document.getElementById(buttonId);
-            button.disabled = input.value.trim() === '';
-        }
-
-        // Update balance on page load
-        updateBalance();
     </script>
 </body>
 </html>

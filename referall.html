@@ -21,142 +21,74 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
+            width: 300px;
         }
         .container h1 {
             margin-bottom: 20px;
             color: #4B0082; /* Purple text */
         }
-        .container .referral-code {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #4B0082; /* Purple text */
-            font-weight: bold;
-            border: 1px solid #4B0082; /* Purple border */
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #FFD700; /* Gold background */
-        }
-        .subscription {
-            margin: 20px 0;
-            text-align: left;
-        }
-        .subscription h2 {
-            margin-bottom: 10px;
-            color: #4B0082; /* Purple text */
-        }
-        .subscription p {
-            margin: 5px 0;
-            color: #000000; /* Black text */
-        }
-        .subscription input,
-        .subscription select {
+        .container input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #4B0082; /* Purple border */
             border-radius: 5px;
-            background-color: #FFFFFF;
         }
-        .subscription .message {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #4B0082; /* Purple text */
-        }
-        .verify-button {
+        .container button {
             width: 100%;
             padding: 10px;
             background-color: #FFD700; /* Gold background */
-            border: 1px solid #4B0082; /* Purple border */
+            border: none;
             border-radius: 5px;
-            font-size: 16px;
             color: #4B0082; /* Purple text */
+            font-size: 16px;
             cursor: pointer;
             margin-top: 10px;
         }
-        .verify-button:hover {
-            background-color: #4B0082; /* Purple background */
-            color: #FFD700; /* Gold text */
+        .container button:disabled {
+            background-color: #CCCCCC; /* Disabled button color */
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Your Referral Code</h1>
-        <div class="referral-code" id="referralCode"></div>
-        
-        <div class="subscription">
-            <h2>Subscription Levels</h2>
-            <p><strong>Silver:</strong> One-time fee of 500 Kenyan Shillings (Minimum required)</p>
-            <p><strong>Gold:</strong> One-time fee of 1000 Kenyan Shillings</p>
-            <p><strong>Platinum:</strong> One-time fee of 2000 Kenyan Shillings</p>
-            
-            <select id="subscriptionLevel" onchange="clearMessage()">
-                <option value="" selected disabled>Select your subscription level</option>
-                <option value="silver">Silver</option>
-                <option value="gold">Gold</option>
-                <option value="platinum">Platinum</option>
-            </select>
-
-            <input type="number" id="amountPaid" placeholder="Amount Paid" required>
-            <input type="text" id="mpesaCode" placeholder="MPESA Code" required>
-            
-            <button class="verify-button" onclick="verifySubscription()">Verify</button>
-            <div class="message" id="subscriptionMessage"></div>
-        </div>
+        <h1>Referral Code</h1>
+        <p>Your Referral Code: <strong id="referralCode"></strong></p>
+        <input type="number" id="amount" placeholder="Amount (20 KES)" value="20" readonly>
+        <input type="text" id="mpesaCode" placeholder="Recipient's MPESA Code" required>
+        <button id="referralButton">Submit Referral</button>
     </div>
     <script>
+        // Function to generate a random referral code
         function generateReferralCode() {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let code = '';
-            for (let i = 0; i < 10; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                code += characters[randomIndex];
-            }
-            return code;
+            return 'REF' + Math.random().toString(36).substr(2, 8).toUpperCase();
         }
 
-        function clearMessage() {
-            document.getElementById('subscriptionMessage').innerText = '';
-        }
+        // Set the generated referral code
+        document.getElementById('referralCode').textContent = generateReferralCode();
 
-        function verifySubscription() {
-            const subscriptionLevel = document.getElementById('subscriptionLevel').value;
-            const amountPaid = document.getElementById('amountPaid').value;
+        // Handle referral submission
+        document.getElementById('referralButton').addEventListener('click', function() {
             const mpesaCode = document.getElementById('mpesaCode').value;
-            const subscriptionMessage = document.getElementById('subscriptionMessage');
-            let message = '';
-
-            if (!subscriptionLevel || !amountPaid || !mpesaCode) {
-                message = 'Please fill in all the fields.';
-            } else {
-                let requiredAmount;
-                switch (subscriptionLevel) {
-                    case 'silver':
-                        requiredAmount = 500;
-                        break;
-                    case 'gold':
-                        requiredAmount = 1000;
-                        break;
-                    case 'platinum':
-                        requiredAmount = 2000;
-                        break;
-                    default:
-                        requiredAmount = 0;
-                        break;
-                }
-
-                if (amountPaid >= requiredAmount) {
-                    message = `You have successfully subscribed to the ${subscriptionLevel.charAt(0).toUpperCase() + subscriptionLevel.slice(1)} level. Amount paid: ${amountPaid} KES. MPESA Code: ${mpesaCode}.`;
-                } else {
-                    message = `The amount paid is insufficient for the ${subscriptionLevel.charAt(0).toUpperCase() + subscriptionLevel.slice(1)} level. Required amount: ${requiredAmount} KES.`;
-                }
+            const amount = parseInt(document.getElementById('amount').value, 10);
+            
+            if (mpesaCode.trim() === '') {
+                alert('Please enter the recipient\'s MPESA code.');
+                return;
             }
 
-            subscriptionMessage.innerText = message;
-        }
-
-        document.getElementById('referralCode').innerText = generateReferralCode();
+            if (amount === 20) {
+                // Update balance
+                let balance = parseInt(localStorage.getItem('balance'), 10) || 0;
+                balance += 100; // Add 100 KES for the referral
+                localStorage.setItem('balance', balance.toString());
+                alert('Referral submitted successfully! You\'ve earned 100 KES.');
+                window.location.href = "index.html"; // Redirect to index page
+            } else {
+                alert('The amount must be 20 KES.');
+            }
+        });
     </script>
 </body>
 </html>

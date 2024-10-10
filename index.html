@@ -129,17 +129,23 @@
             background-color: #4B0082; /* Purple background */
             color: #FFD700; /* Gold text */
         }
+        .close-popup {
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #4B0082; /* Purple text */
+        }
     </style>
 </head>
 <body>
     <!-- Pop-up Message -->
     <div id="popup" class="popup" style="display: none;">
         <div class="popup-content">
+            <span class="close-popup" onclick="closePopup()">&times;</span>
             <h2>Complete Your Registration</h2>
-            <p>Please complete your one-time registration by sending 500 KES to the MPESA number 0799629116.</p>
+            <p>Please complete your one-time registration by sending 20 KES to the MPESA number 0799629116.</p>
             <p>Enter the amount you sent and the recipient's MPESA code below:</p>
             <input type="number" id="amount" placeholder="Amount (KES)" required>
-            <input type="text" id="mpesaCode" placeholder="Recipient's MPESA Code" required>
+            <input type="text" id="mpesaCode" placeholder="MPESA Code" required>
             <button id="registerButton" disabled>Register</button>
         </div>
     </div>
@@ -156,8 +162,8 @@
         <h1>Welcome</h1>
         
         <div class="info">
-            <p><strong>Username:</strong> <span id="username">JohnDoe</span></p>
-            <p><strong>Balance:</strong> 500 KES</p>
+            <p><strong>Username:</strong> <span id="username">Username</span></p>
+            <p><strong>Balance:</strong> <span id="balance">0</span> KES</p>
         </div>
         
         <div class="links">
@@ -173,11 +179,16 @@
             const amount = document.getElementById('amount').value;
             const mpesaCode = document.getElementById('mpesaCode').value;
             const registerButton = document.getElementById('registerButton');
-            if (amount === '500' && mpesaCode) {
+            if (amount === '20' && mpesaCode) {
                 registerButton.disabled = false;
             } else {
                 registerButton.disabled = true;
             }
+        }
+        
+        // Function to close the pop-up
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
         }
         
         // Event listeners for the input fields
@@ -189,8 +200,16 @@
             // Mark registration as complete in localStorage
             localStorage.setItem('registered', 'true');
             
+            // Update balance and store it in localStorage
+            let balance = parseInt(localStorage.getItem('balance'), 10) || 0;
+            balance += 100; // Add 100 KES for the registration
+            localStorage.setItem('balance', balance.toString());
+            
+            // Update the balance display
+            document.getElementById('balance').textContent = balance;
+            
             // Close the pop-up
-            document.getElementById('popup').style.display = 'none';
+            closePopup();
         });
         
         // Display pop-up only if the user has not registered
@@ -198,8 +217,9 @@
             document.getElementById('popup').style.display = 'flex';
         }
         
-        // Set the username from localStorage (or wherever it is stored)
-        document.getElementById('username').textContent = localStorage.getItem('username') || 'JohnDoe';
+        // Set the username and balance from localStorage
+        document.getElementById('username').textContent = localStorage.getItem('username') || 'Username';
+        document.getElementById('balance').textContent = localStorage.getItem('balance') || '0';
     </script>
 </body>
 </html>

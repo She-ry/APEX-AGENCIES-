@@ -61,10 +61,10 @@
     <div class="container">
         <h1>Survey</h1>
         <form id="surveyForm">
-            <label for="question1">Question 1:</label>
+            <label for="question1" id="label1">Question 1:</label>
             <textarea id="question1" placeholder="Your answer..." required></textarea>
 
-            <label for="question2">Question 2:</label>
+            <label for="question2" id="label2">Question 2:</label>
             <textarea id="question2" placeholder="Your answer..." required></textarea>
 
             <button type="submit" id="submitButton" disabled>Submit</button>
@@ -73,12 +73,53 @@
             Thank you for completing the survey! You have earned 20 Kenyan Shillings.
         </div>
     </div>
+
     <script>
         const surveyForm = document.getElementById('surveyForm');
         const question1 = document.getElementById('question1');
         const question2 = document.getElementById('question2');
         const submitButton = document.getElementById('submitButton');
         const earningsMessage = document.getElementById('earningsMessage');
+
+        // Array of random questions
+        const randomQuestions = [
+            "What motivates you the most?",
+            "How do you like to spend your weekends?",
+            "What's your favorite hobby and why?",
+            "Describe a recent challenge you faced and how you overcame it.",
+            "If you could travel anywhere in the world, where would you go and why?",
+            "What is the most important quality in a friend?",
+            "How do you stay productive during the day?",
+            "What is a skill you'd like to learn and why?",
+            "Describe your ideal vacation.",
+            "What is one goal you want to achieve this year?"
+        ];
+
+        function getRandomQuestion() {
+            return randomQuestions[Math.floor(Math.random() * randomQuestions.length)];
+        }
+
+        function setRandomQuestions() {
+            document.getElementById('label1').textContent = "Question 1: " + getRandomQuestion();
+            document.getElementById('label2').textContent = "Question 2: " + getRandomQuestion();
+        }
+
+        const getTodayDate = () => new Date().toISOString().split('T')[0];
+        const getStoredData = () => JSON.parse(localStorage.getItem('surveyData')) || { days: 0, lastSubmission: null };
+
+        const checkSurveyEligibility = () => {
+            const today = getTodayDate();
+            const storedData = getStoredData();
+
+            if (storedData.days >= 3) {
+                document.body.innerHTML = "<p>You have already completed the survey for 3 days. No more surveys available.</p>";
+                return false;
+            } else if (storedData.lastSubmission === today) {
+                document.body.innerHTML = "<p>You have already completed today's survey. Please come back tomorrow.</p>";
+                return false;
+            }
+            return true;
+        };
 
         function checkInputs() {
             submitButton.disabled = !question1.value || !question2.value;
@@ -89,10 +130,34 @@
 
         surveyForm.addEventListener('submit', function(event) {
             event.preventDefault();
+
+            const today = getTodayDate();
+            let storedData = getStoredData();
+
+            if (storedData.lastSubmission !== today) {
+                storedData.days++;
+            }
+
+            storedData.lastSubmission = today;
+            localStorage.setItem('surveyData', JSON.stringify(storedData));
+
+            // Update the balance (only to be displayed on the index page)
+            let balance = parseInt(localStorage.getItem('balance')) || 0;
+            balance += 20; // Increase balance by 20 KES
+            localStorage.setItem('balance', balance);
+
             earningsMessage.style.display = 'block';
             surveyForm.reset();
             submitButton.disabled = true;
+
+            checkSurveyEligibility();
         });
+
+        window.onload = () => {
+            if (checkSurveyEligibility()) {
+                setRandomQuestions();
+            }
+        };
     </script>
 </body>
 </html>

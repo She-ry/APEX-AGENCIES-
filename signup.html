@@ -75,6 +75,14 @@
             signupButton.disabled = !newUsername.value || !newPassword.value;
         }
 
+        // Event listener to handle signup
+        signupButton.addEventListener('click', function() {
+            // Add logic to create a new account here if needed
+            // For now, we assume the sign-up is successful
+            // Redirect to the index page
+            window.location.href = "index.html";
+        });
+
         newUsername.addEventListener('input', checkInputs);
         newPassword.addEventListener('input', checkInputs);
     </script>
